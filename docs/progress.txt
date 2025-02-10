@@ -1,0 +1,70 @@
+# Sneaker Vault v2 Project Roadmap and Progress
+
+## Project Overview
+A Next.js application for sneaker enthusiasts to search, save, and organize their sneaker collections.
+
+## Roadmap
+
+### Phase 1: Setup and Basic Infrastructure
+- [x] Initialize Next.js project with App Router
+- [x] Configure Tailwind CSS and DaisyUI
+- [x] Set up project structure
+- [x] Configure Supabase client
+- [x] Set up authentication system
+
+### Phase 2: Core Features
+- [x] Implement Search Page (/search)
+- [x] Create Shoe Detail Page (/shoe/[id])
+- [x] Develop Vault Page (/vault)
+- [x] Build Collection Page (/collections)
+
+### Phase 3: Database and API Integration
+- [x] Set up Supabase tables
+- [x] Implement Sneaks-API integration
+- [x] Create API routes for sneaker operations
+- [x] Set up data models and relationships
+
+### Phase 4: UI/UX and Polish
+- [x] Implement responsive design
+- [x] Add loading states
+- [x] Set up search as default page
+- [x] Implement authentication checks
+- [x] Add user feedback notifications
+- [x] Create navigation with auth state
+- [x] Implement protected routes
+
+## Progress Updates
+- Initialized Next.js project with App Router.
+- Installed necessary dependencies: Supabase, Sneaks-API, DaisyUI.
+- Set up project structure and Tailwind CSS configuration.
+- Created basic layout component and home page.
+- Implemented search page and API route using Sneaks-API.
+- Set up Supabase authentication components and callback route.
+- Created shoe detail page with functionality to add sneakers to the vault.
+- Enhanced search page UI with better responsiveness and accessibility.
+- Made search page the default landing page.
+- Set up Supabase database schema with tables for vault items and collections.
+- Implemented database helper functions for vault and collection operations.
+- Added Row Level Security (RLS) policies for data protection.
+- Converted codebase from TypeScript to JavaScript.
+- Implemented authentication middleware for protected routes.
+- Created sign-in page with Supabase Auth UI.
+- Set up navigation with authentication state management.
+- Implemented vault page for viewing saved sneakers.
+- Created collections page for organizing sneakers.
+- Added proper error handling and loading states.
+
+## Next Steps
+1. Enhance collection management features
+2. Add sorting and filtering options to vault and collections
+3. Implement search history and favorites
+4. Add user profile customization
+5. Implement social sharing features
+
+## Issues and Notes
+- Handling Sneaks-API rate limiting
+- Considering caching popular sneaker searches
+- Planning for error handling with external API calls
+- Monitoring database performance and optimizing queries if needed
+- Added proper environment variable handling
+- Implemented client-side authentication state management
