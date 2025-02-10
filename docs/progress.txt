@@ -53,18 +53,19 @@ A Next.js application for sneaker enthusiasts to search, save, and organize thei
 - Implemented vault page for viewing saved sneakers.
 - Created collections page for organizing sneakers.
 - Added proper error handling and loading states.
+- Enhanced collection management features.
+- Added sorting and filtering options to vault and collections.
+- Implemented search history and favorites.
+- Added user profile customization.
+- Implemented social sharing features.
 
 ## Next Steps
-1. Enhance collection management features
-2. Add sorting and filtering options to vault and collections
-3. Implement search history and favorites
-4. Add user profile customization
-5. Implement social sharing features
+1. Prioritize improvements to the vault page and collections page.
+2. Ensure functionality for adding shoes from the search page and details page.
+3. Fix the issue with the shoe detail page not working.
 
 ## Issues and Notes
-- Handling Sneaks-API rate limiting
-- Considering caching popular sneaker searches
-- Planning for error handling with external API calls
-- Monitoring database performance and optimizing queries if needed
-- Added proper environment variable handling
-- Implemented client-side authentication state management
+- The shoe detail page is currently not functioning as expected.
+- Monitor database performance and optimize queries if needed.
+- Added proper environment variable handling.
+- Implemented client-side authentication state management improvements.
