@@ -39,6 +39,12 @@ A Next.js application for sneaker enthusiasts to search, save, and organize thei
   - Added data validation before database operations
 
 ### Authentication and Security
+- Fixed OAuth Configuration:
+  - Added proper Google OAuth redirect URIs
+  - Updated Supabase authentication settings
+  - Configured local development callbacks
+  - Enhanced authentication error handling
+  - Added proper documentation for auth setup
 - Enhanced authentication flow:
   - Improved sign-in page with dark mode support
   - Added proper loading states
@@ -95,6 +101,28 @@ A Next.js application for sneaker enthusiasts to search, save, and organize thei
 - Keep monitoring build performance
 - Ensure proper image optimization
 - Maintain code quality standards
+- OAuth Configuration for Vercel Deployment:
+  - Google Cloud Console Settings:
+    - Add Supabase callback: https://tdsjyhmclmkczefdaxur.supabase.co/auth/v1/callback
+    - Add Vercel callback: https://your-app.vercel.app/auth/callback
+    - Configure OAuth consent screen
+    - Set proper application type
+    - Add authorized domains
+  - Supabase Settings for Vercel:
+    - Set Site URL to: https://your-app.vercel.app
+    - Add redirect URLs:
+      - https://your-app.vercel.app/auth/callback
+      - https://your-app.vercel.app
+    - Verify Google provider settings
+    - Update environment variables in Vercel
+  - Vercel Environment Variables:
+    - NEXT_PUBLIC_SUPABASE_URL
+    - NEXT_PUBLIC_SUPABASE_ANON_KEY
+    - Add any other required environment variables
+  - Local Development:
+    - Keep local OAuth settings
+    - Maintain development environment variables
+    - Test authentication flow locally before deployment
 
 ## Roadmap
 
