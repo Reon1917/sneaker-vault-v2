@@ -1,12 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Auth } from '@supabase/auth-ui-react'
 import { ThemeSupa } from '@supabase/auth-ui-shared'
 
-export default function SignIn() {
+function SignInContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [mounted, setMounted] = useState(false)
@@ -32,10 +32,10 @@ export default function SignIn() {
   if (!mounted) return null
 
   return (
-    <div className="max-w-md mx-auto mt-20 p-6 bg-white rounded-xl shadow-xl">
+    <div className="max-w-md mx-auto mt-20 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-xl">
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Welcome to Sneaker Vault</h1>
-        <p className="text-gray-600 mt-2">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Welcome to Sneaker Vault</h1>
+        <p className="text-gray-600 dark:text-gray-400 mt-2">
           Sign in to manage your sneaker collection
         </p>
       </div>
@@ -69,5 +69,19 @@ export default function SignIn() {
         redirectTo={`${typeof window !== 'undefined' ? window.location.origin : ''}/auth/callback`}
       />
     </div>
+  )
+}
+
+export default function SignIn() {
+  return (
+    <Suspense fallback={
+      <div className="max-w-md mx-auto mt-20 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-xl">
+        <div className="flex justify-center">
+          <div className="loading loading-spinner loading-lg"></div>
+        </div>
+      </div>
+    }>
+      <SignInContent />
+    </Suspense>
   )
 } 
