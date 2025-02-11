@@ -3,11 +3,12 @@ const sneaks = new SneaksAPI();
 
 export async function GET(request, { params }) {
   try {
-    const styleId = params.id;
+    // Ensure params is properly resolved
+    const { id } = await Promise.resolve(params);
     
     return new Promise((resolve, reject) => {
-      sneaks.getProductPrices(styleId, (err, product) => {
-        if (err) {
+      sneaks.getProductPrices(id, (err, product) => {
+        if (err || !product) {
           resolve(new Response(JSON.stringify({ error: 'Failed to fetch shoe details' }), {
             status: 500,
             headers: { 'Content-Type': 'application/json' },

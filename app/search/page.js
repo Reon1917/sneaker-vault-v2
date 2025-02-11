@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
+import ShoeCard from '../components/ShoeCard'
 
 // Dynamically import icons with fallback
 const Search = dynamic(() => import('lucide-react').then(mod => mod.Search), {
@@ -82,38 +83,17 @@ export default function SearchPage() {
         </div>
       </form>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {results.map((sneaker) => (
-          <div
-            key={sneaker.styleID}
-            className="card bg-base-200 shadow-xl hover:shadow-2xl transition-shadow duration-200"
-          >
-            <figure className="px-4 pt-4">
-              <img
-                src={sneaker.thumbnail}
-                alt={sneaker.name}
-                className="rounded-xl object-cover h-48 w-full"
-                loading="lazy"
-              />
-            </figure>
-            <div className="card-body">
-              <h2 className="card-title text-lg font-semibold line-clamp-2">{sneaker.name}</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">{sneaker.brand}</p>
-              <div className="card-actions justify-end mt-4">
-                <a
-                  href={`/shoe/${sneaker.styleID}`}
-                  className="btn btn-primary w-full"
-                  tabIndex={0}
-                  role="button"
-                  aria-label={`View details for ${sneaker.name}`}
-                >
-                  View Details
-                </a>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+      {loading ? (
+        <div className="flex justify-center py-12">
+          <span className="loading loading-spinner loading-lg"></span>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-8">
+          {results.map((sneaker) => (
+            <ShoeCard key={sneaker.styleID} shoe={sneaker} />
+          ))}
+        </div>
+      )}
 
       {results.length === 0 && !loading && query && (
         <div className="text-center py-12">

@@ -44,16 +44,18 @@ export default function VaultPage() {
 
     if (error) {
       console.error('Error removing from vault:', error);
+      alert('Failed to remove from vault. Please try again.');
       return;
     }
 
     setSneakers((prev) => prev.filter((s) => s.sneaker_id !== sneakerId));
+    alert('Removed from vault successfully!');
   };
 
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[50vh]">
-        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-gray-900" />
+        <span className="loading loading-spinner loading-lg"></span>
       </div>
     );
   }
@@ -65,7 +67,7 @@ export default function VaultPage() {
         <p className="text-gray-600 mb-6">Start adding sneakers to your collection!</p>
         <Link
           href="/search"
-          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+          className="btn btn-primary"
         >
           Search Sneakers
         </Link>
@@ -74,35 +76,47 @@ export default function VaultPage() {
   }
 
   return (
-    <div>
+    <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-gray-900 mb-8">Your Vault</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {sneakers.map((sneaker) => (
           <div
             key={sneaker.id}
-            className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+            className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow"
           >
-            <div className="relative h-48">
-              <Image
-                src={sneaker.image_url}
-                alt={sneaker.name}
-                fill
-                className="object-cover"
-              />
-            </div>
-            <div className="p-4">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">{sneaker.name}</h3>
-              <p className="text-gray-600 mb-4">${sneaker.retail_price}</p>
-              <div className="flex justify-between items-center">
+            <figure className="relative px-4 pt-4">
+              <div className="relative w-full h-56">
+                {sneaker.thumbnail && (
+                  <Image
+                    src={sneaker.thumbnail}
+                    alt={sneaker.name}
+                    width={400}
+                    height={400}
+                    className="rounded-xl object-contain bg-gray-50 w-full h-full"
+                    onError={(e) => {
+                      console.error('Image load error:', e);
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                )}
+              </div>
+            </figure>
+            <div className="card-body pt-4">
+              <h3 className="card-title text-lg font-bold line-clamp-2">{sneaker.name}</h3>
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-gray-600">{sneaker.brand}</p>
+                <p className="text-lg font-semibold">${sneaker.retail_price || 'N/A'}</p>
+              </div>
+              <div className="card-actions justify-end mt-4">
                 <Link
                   href={`/shoe/${sneaker.sneaker_id}`}
-                  className="text-indigo-600 hover:text-indigo-800 font-medium"
+                  className="btn btn-outline btn-primary flex-1"
                 >
                   View Details
                 </Link>
                 <button
                   onClick={() => handleRemoveFromVault(sneaker.sneaker_id)}
-                  className="text-red-600 hover:text-red-800 font-medium"
+                  className="btn btn-ghost text-error"
                 >
                   Remove
                 </button>

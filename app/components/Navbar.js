@@ -1,94 +1,159 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import Image from 'next/image';
+import { useRouter, usePathname } from 'next/navigation';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useEffect, useState } from 'react';
+import { User } from 'lucide-react';
 
 const Navbar = () => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const router = useRouter();
   const pathname = usePathname();
   const supabase = createClientComponentClient();
+  const [user, setUser] = useState(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-      setLoading(false);
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        setUser(session?.user || null);
+      } catch (error) {
+        console.error('Error fetching session:', error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     getUser();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+      setUser(session?.user || null);
+      if (session) {
+        router.refresh();
+      }
     });
 
     return () => subscription.unsubscribe();
-  }, [supabase.auth]);
+  }, [supabase.auth, router]);
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
+  const handleSignIn = async () => {
+    try {
+      setLoading(true);
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${location.origin}/auth/callback`,
+        },
+      });
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error signing in:', error);
+      alert('Error signing in. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const navItems = [
-    { href: '/search', label: 'Search' },
-    { href: '/vault', label: 'Vault', protected: true },
-    { href: '/collections', label: 'Collections', protected: true },
-  ];
+  const handleSignOut = async () => {
+    try {
+      setLoading(true);
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      setIsDropdownOpen(false);
+      router.refresh();
+      if (pathname !== '/search') {
+        router.push('/search');
+      }
+    } catch (error) {
+      console.error('Error signing out:', error);
+      alert('Error signing out. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <nav className="bg-white border-b border-gray-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex">
-            <Link 
-              href="/"
-              className="flex items-center px-2 text-gray-900 font-semibold"
-            >
-              Sneaker Vault
-            </Link>
-            <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-              {navItems.map((item) => {
-                if (item.protected && !user) return null;
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`inline-flex items-center px-1 pt-1 text-sm font-medium ${
-                      pathname === item.href
-                        ? 'border-b-2 border-indigo-500 text-gray-900'
-                        : 'text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                    }`}
-                  >
-                    {item.label}
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-          <div className="flex items-center">
-            {loading ? (
-              <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-gray-900" />
-            ) : user ? (
-              <button
-                onClick={handleSignOut}
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              >
-                Sign Out
-              </button>
-            ) : (
-              <Link
-                href="/auth/signin"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              >
-                Sign In
+    <div className="navbar bg-base-100">
+      <div className="flex-1">
+        <Link className="btn btn-ghost text-xl" href="/">Sneaker Vault</Link>
+      </div>
+      <div className="flex-none gap-2">
+        <div className="flex items-center gap-4">
+          <Link href="/search" className="btn btn-ghost">
+            Search
+          </Link>
+          {user && (
+            <>
+              <Link href="/vault" className="btn btn-ghost">
+                Vault
               </Link>
+              <Link href="/collections" className="btn btn-ghost">
+                Collections
+              </Link>
+            </>
+          )}
+          <div className="dropdown dropdown-end">
+            {loading ? (
+              <button className="btn btn-ghost btn-circle">
+                <span className="loading loading-spinner loading-sm"></span>
+              </button>
+            ) : user ? (
+              <div className="relative">
+                <button
+                  className="btn btn-circle btn-ghost"
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                >
+                  {user.user_metadata?.avatar_url ? (
+                    <div className="relative w-8 h-8">
+                      <Image
+                        src={user.user_metadata.avatar_url}
+                        alt="Profile"
+                        fill
+                        sizes="(max-width: 768px) 32px"
+                        className="rounded-full"
+                      />
+                    </div>
+                  ) : (
+                    <User />
+                  )}
+                </button>
+                {isDropdownOpen && (
+                  <div className="dropdown-content menu p-2 shadow bg-base-200 rounded-box absolute right-0 mt-2 w-48">
+                    <div className="px-4 py-2 text-sm">
+                      {user.email}
+                    </div>
+                    <div className="divider my-0"></div>
+                    <button
+                      onClick={handleSignOut}
+                      className="btn btn-ghost btn-sm justify-start w-full"
+                      disabled={loading}
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <button
+                className="btn btn-primary"
+                onClick={handleSignIn}
+                disabled={loading}
+              >
+                {loading ? (
+                  <span className="loading loading-spinner loading-sm"></span>
+                ) : (
+                  'Sign In'
+                )}
+              </button>
             )}
           </div>
         </div>
       </div>
-    </nav>
+    </div>
   );
 };
 

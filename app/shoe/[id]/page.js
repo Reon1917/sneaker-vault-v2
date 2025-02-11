@@ -1,23 +1,20 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, use, useCallback } from 'react'
+import Image from 'next/image'
 import { supabase } from '../../../supabase/client'
 
 export default function ShoeDetailPage({ params }) {
+  const resolvedParams = use(params)
   const [shoe, setShoe] = useState(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [isInVault, setIsInVault] = useState(false)
   const [selectedImage, setSelectedImage] = useState(null)
 
-  useEffect(() => {
-    fetchShoeDetails()
-    checkVaultStatus()
-  }, [])
-
-  const fetchShoeDetails = async () => {
+  const fetchShoeDetails = useCallback(async () => {
     try {
-      const response = await fetch(`/api/shoes/${params.id}`)
+      const response = await fetch(`/api/shoes/${resolvedParams.id}`)
       const data = await response.json()
       setShoe(data)
       setSelectedImage(data.thumbnail)
@@ -26,21 +23,26 @@ export default function ShoeDetailPage({ params }) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [resolvedParams.id])
 
-  const checkVaultStatus = async () => {
+  const checkVaultStatus = useCallback(async () => {
     const { data: { session } } = await supabase.auth.getSession()
     if (session) {
       const { data, error } = await supabase
         .from('vault')
         .select('*')
         .eq('user_id', session.user.id)
-        .eq('style_id', params.id)
+        .eq('style_id', resolvedParams.id)
         .single()
       
       setIsInVault(!!data)
     }
-  }
+  }, [resolvedParams.id])
+
+  useEffect(() => {
+    fetchShoeDetails()
+    checkVaultStatus()
+  }, [fetchShoeDetails, checkVaultStatus])
 
   const handleAddToVault = async () => {
     setSaving(true)
@@ -91,28 +93,34 @@ export default function ShoeDetailPage({ params }) {
       <div className="grid lg:grid-cols-2 gap-12">
         {/* Image Section */}
         <div className="space-y-6">
-          <div className="aspect-square rounded-xl overflow-hidden shadow-lg">
-            <img 
+          <div className="aspect-square rounded-xl overflow-hidden shadow-lg relative">
+            <Image 
               src={selectedImage} 
-              alt={shoe.name}
-              className="w-full h-full object-cover"
+              alt={shoe?.name || ''}
+              fill
+              className="object-contain bg-gray-50"
             />
           </div>
           <div className="grid grid-cols-4 gap-4">
-            <img 
-              src={shoe.thumbnail} 
-              alt={shoe.name}
-              onClick={() => setSelectedImage(shoe.thumbnail)}
-              className={`w-full aspect-square rounded-lg cursor-pointer object-cover border-2 ${selectedImage === shoe.thumbnail ? 'border-primary' : 'border-transparent'}`}
-            />
-            {shoe.imageLinks?.slice(0, 3).map((img, index) => (
-              <img 
-                key={index}
-                src={img} 
-                alt={`${shoe.name} view ${index + 1}`}
-                onClick={() => setSelectedImage(img)}
-                className={`w-full aspect-square rounded-lg cursor-pointer object-cover border-2 ${selectedImage === img ? 'border-primary' : 'border-transparent'}`}
+            <div className="relative aspect-square">
+              <Image 
+                src={shoe?.thumbnail} 
+                alt={shoe?.name || ''}
+                fill
+                onClick={() => setSelectedImage(shoe.thumbnail)}
+                className={`rounded-lg cursor-pointer object-contain bg-gray-50 border-2 ${selectedImage === shoe?.thumbnail ? 'border-primary' : 'border-transparent'}`}
               />
+            </div>
+            {shoe?.imageLinks?.slice(0, 3).map((img, index) => (
+              <div key={index} className="relative aspect-square">
+                <Image 
+                  src={img} 
+                  alt={`${shoe.name} view ${index + 1}`}
+                  fill
+                  onClick={() => setSelectedImage(img)}
+                  className={`rounded-lg cursor-pointer object-contain bg-gray-50 border-2 ${selectedImage === img ? 'border-primary' : 'border-transparent'}`}
+                />
+              </div>
             ))}
           </div>
         </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 export default function CollectionsPage() {
@@ -11,12 +11,7 @@ export default function CollectionsPage() {
   const [vaultItems, setVaultItems] = useState([]);
   const supabase = createClientComponentClient();
 
-  useEffect(() => {
-    fetchCollections();
-    fetchVaultItems();
-  }, []);
-
-  const fetchCollections = async () => {
+  const fetchCollections = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) {
@@ -36,9 +31,9 @@ export default function CollectionsPage() {
 
     setCollections(data || []);
     setLoading(false);
-  };
+  }, [supabase.auth]);
 
-  const fetchVaultItems = async () => {
+  const fetchVaultItems = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) return;
@@ -54,7 +49,12 @@ export default function CollectionsPage() {
     }
 
     setVaultItems(data || []);
-  };
+  }, [supabase.auth]);
+
+  useEffect(() => {
+    fetchCollections();
+    fetchVaultItems();
+  }, [fetchCollections, fetchVaultItems]);
 
   const handleCreateCollection = async (e) => {
     e.preventDefault();
