@@ -119,7 +119,7 @@ export default function CollectionModal({ isOpen, onClose, shoe, onSuccess }) {
       return
     }
 
-    if (!shoe || !shoe.styleID) {
+    if (!shoe) {
       showToast('Invalid shoe data', 'error')
       return
     }
@@ -129,10 +129,10 @@ export default function CollectionModal({ isOpen, onClose, shoe, onSuccess }) {
       // Prepare the data with all required fields
       const collectionItem = {
         collection_id: selectedCollection,
-        sneaker_id: shoe.styleID,
-        name: shoe.shoeName || shoe.name || 'Unknown',
-        brand: shoe.brand || 'Unknown',
-        thumbnail: shoe.thumbnail || ''
+        sneaker_id: shoe.sneaker_id || shoe.styleID, // Handle both vault and search items
+        name: shoe.name || shoe.shoeName, // Handle both vault and search items
+        brand: shoe.brand,
+        thumbnail: shoe.thumbnail
       }
 
       // Validate required fields
