@@ -8,6 +8,7 @@ export default function ShoeDetailPage({ params }) {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [isInVault, setIsInVault] = useState(false)
+  const [selectedImage, setSelectedImage] = useState(null)
 
   useEffect(() => {
     fetchShoeDetails()
@@ -19,6 +20,7 @@ export default function ShoeDetailPage({ params }) {
       const response = await fetch(`/api/shoes/${params.id}`)
       const data = await response.json()
       setShoe(data)
+      setSelectedImage(data.thumbnail)
     } catch (error) {
       console.error('Error fetching shoe details:', error)
     } finally {
@@ -60,7 +62,8 @@ export default function ShoeDetailPage({ params }) {
             name: shoe.name,
             brand: shoe.brand,
             image_url: shoe.thumbnail,
-            retail_price: shoe.retailPrice
+            retail_price: shoe.retailPrice,
+            colorway: shoe.colorway
           }
         ])
 
@@ -84,39 +87,55 @@ export default function ShoeDetailPage({ params }) {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="grid md:grid-cols-2 gap-8">
-        <div className="space-y-4">
-          <img 
-            src={shoe.thumbnail} 
-            alt={shoe.name}
-            className="w-full rounded-lg shadow-lg"
-          />
-          <div className="grid grid-cols-3 gap-2">
+    <div className="container mx-auto px-4 py-8 max-w-7xl">
+      <div className="grid lg:grid-cols-2 gap-12">
+        {/* Image Section */}
+        <div className="space-y-6">
+          <div className="aspect-square rounded-xl overflow-hidden shadow-lg">
+            <img 
+              src={selectedImage} 
+              alt={shoe.name}
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <div className="grid grid-cols-4 gap-4">
+            <img 
+              src={shoe.thumbnail} 
+              alt={shoe.name}
+              onClick={() => setSelectedImage(shoe.thumbnail)}
+              className={`w-full aspect-square rounded-lg cursor-pointer object-cover border-2 ${selectedImage === shoe.thumbnail ? 'border-primary' : 'border-transparent'}`}
+            />
             {shoe.imageLinks?.slice(0, 3).map((img, index) => (
               <img 
                 key={index}
                 src={img} 
                 alt={`${shoe.name} view ${index + 1}`}
-                className="w-full rounded-md shadow"
+                onClick={() => setSelectedImage(img)}
+                className={`w-full aspect-square rounded-lg cursor-pointer object-cover border-2 ${selectedImage === img ? 'border-primary' : 'border-transparent'}`}
               />
             ))}
           </div>
         </div>
 
-        <div className="space-y-6">
-          <h1 className="text-4xl font-bold">{shoe.name}</h1>
-          <p className="text-xl">{shoe.brand}</p>
+        {/* Details Section */}
+        <div className="space-y-8">
+          <div>
+            <h1 className="text-4xl font-bold mb-2">{shoe.name}</h1>
+            <p className="text-2xl text-gray-600">{shoe.brand}</p>
+            <p className="text-lg text-gray-500 mt-2">{shoe.colorway}</p>
+          </div>
           
-          <div className="stats shadow">
-            <div className="stat">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="stat bg-base-200 rounded-box">
               <div className="stat-title">Retail Price</div>
-              <div className="stat-value">${shoe.retailPrice}</div>
+              <div className="stat-value">${shoe.retailPrice || 'N/A'}</div>
             </div>
             
-            <div className="stat">
+            <div className="stat bg-base-200 rounded-box">
               <div className="stat-title">Release Date</div>
-              <div className="stat-value">{new Date(shoe.releaseDate).toLocaleDateString()}</div>
+              <div className="stat-value text-2xl">
+                {shoe.releaseDate ? new Date(shoe.releaseDate).toLocaleDateString() : 'N/A'}
+              </div>
             </div>
           </div>
 
@@ -125,8 +144,28 @@ export default function ShoeDetailPage({ params }) {
             <p className="text-gray-600">{shoe.description || 'No description available'}</p>
           </div>
 
+          <div className="space-y-4">
+            <h3 className="text-xl font-semibold">Resell Prices</h3>
+            <div className="grid grid-cols-3 gap-4">
+              {Object.entries(shoe.resellPrices || {}).map(([platform, price]) => (
+                price && (
+                  <a
+                    key={platform}
+                    href={shoe.resellLinks[platform]}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="stat bg-base-200 rounded-box hover:bg-base-300 transition-colors"
+                  >
+                    <div className="stat-title capitalize">{platform}</div>
+                    <div className="stat-value text-xl">${price}</div>
+                  </a>
+                )
+              ))}
+            </div>
+          </div>
+
           <button 
-            className={`btn btn-primary w-full ${isInVault ? 'btn-disabled' : ''}`}
+            className={`btn btn-primary btn-lg w-full ${isInVault ? 'btn-disabled' : ''}`}
             onClick={handleAddToVault}
             disabled={saving || isInVault}
           >

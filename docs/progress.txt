@@ -58,14 +58,21 @@ A Next.js application for sneaker enthusiasts to search, save, and organize thei
 - Implemented search history and favorites.
 - Added user profile customization.
 - Implemented social sharing features.
+- Fixed and enhanced shoe detail page with:
+  - Improved image gallery with main image and thumbnails
+  - Added resell prices and links to StockX, GOAT, and Flight Club
+  - Enhanced UI layout with better spacing and organization
+  - Added colorway information to vault items
+  - Implemented proper error handling for API requests
+  - Added loading states and fallbacks for missing data
 
 ## Next Steps
-1. Prioritize improvements to the vault page and collections page.
-2. Ensure functionality for adding shoes from the search page and details page.
-3. Fix the issue with the shoe detail page not working.
+1. Improve the search page card layout with better spacing and more information
+2. Enhance the vault page and collections page UI
+3. Add more filtering and sorting options
+4. Implement batch operations for collections
 
 ## Issues and Notes
-- The shoe detail page is currently not functioning as expected.
 - Monitor database performance and optimize queries if needed.
 - Added proper environment variable handling.
 - Implemented client-side authentication state management improvements.
