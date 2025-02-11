@@ -132,24 +132,6 @@ Required variables:
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 
-## 📱 Responsive Design
-
-- Mobile-first approach
-- Tablet optimization
-- Desktop enhancements
-- Consistent experience across devices
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Open a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
@@ -161,7 +143,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Contact
 
-Your Name - [Lin Myat Phyo](https://www.linkedin.com/in/lin-myat-phyo-b872b1217/)
+Linkedin - [Lin Myat Phyo](https://www.linkedin.com/in/lin-myat-phyo-b872b1217/)
 
 Project Link: [https://github.com/yourusername/sneaker-vault-v2](https://github.com/yourusername/sneaker-vault-v2)
 
