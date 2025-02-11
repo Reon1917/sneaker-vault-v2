@@ -161,9 +161,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Contact
 
-Your Name - [@yourusername](https://twitter.com/yourusername)
+Your Name - [Lin Myat Phyo](https://www.linkedin.com/in/lin-myat-phyo-b872b1217/)
 
 Project Link: [https://github.com/yourusername/sneaker-vault-v2](https://github.com/yourusername/sneaker-vault-v2)
 
 ---
-Built with ❤️ by [Your Name]
+Built with ❤️ by Lin Myat Phyo
