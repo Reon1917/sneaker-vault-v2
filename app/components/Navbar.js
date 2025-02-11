@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useEffect, useState } from 'react';
-import { User } from 'lucide-react';
+import { User, Moon, Sun } from 'lucide-react';
 
 const Navbar = () => {
   const router = useRouter();
@@ -14,6 +14,7 @@ const Navbar = () => {
   const [user, setUser] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [theme, setTheme] = useState('light');
 
   useEffect(() => {
     const getUser = async () => {
@@ -39,6 +40,24 @@ const Navbar = () => {
 
     return () => subscription.unsubscribe();
   }, [supabase.auth, router]);
+
+  useEffect(() => {
+    // Check if theme is stored in localStorage
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    setTheme(savedTheme);
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    if (savedTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
+    document.documentElement.classList.toggle('dark');
+  };
 
   const handleSignIn = async () => {
     try {
@@ -83,6 +102,13 @@ const Navbar = () => {
       </div>
       <div className="flex-none gap-2">
         <div className="flex items-center gap-4">
+          <button
+            className="btn btn-ghost btn-circle"
+            onClick={toggleTheme}
+            aria-label="Toggle theme"
+          >
+            {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+          </button>
           <Link href="/search" className="btn btn-ghost">
             Search
           </Link>

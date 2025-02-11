@@ -32,6 +32,8 @@ A Next.js application for sneaker enthusiasts to search, save, and organize thei
 - [x] Add user feedback notifications
 - [x] Create navigation with auth state
 - [x] Implement protected routes
+- [x] Implement dark mode with jet black theme
+- [x] Add theme toggle in navbar
 
 ## Progress Updates
 - Initialized Next.js project with App Router.
@@ -53,7 +55,22 @@ A Next.js application for sneaker enthusiasts to search, save, and organize thei
 - Implemented vault page for viewing saved sneakers.
 - Created collections page for organizing sneakers.
 - Added proper error handling and loading states.
-- Enhanced collection management features.
+- Enhanced collection management features:
+  - Redesigned collections page with improved layout
+  - Added collection editing functionality
+  - Implemented collection deletion with confirmation
+  - Added collection items view with grid layout
+  - Improved collection selection UI
+  - Added loading states and error handling
+  - Enhanced collection item management
+  - Added proper image handling in collections
+  - Improved collection creation workflow
+  - Added responsive design for better mobile experience
+  - Enhanced collection navigation
+  - Added proper validation and error messages
+  - Improved collection item removal
+  - Added empty state handling
+  - Enhanced visual feedback for actions
 - Added sorting and filtering options to vault and collections.
 - Implemented search history and favorites.
 - Added user profile customization.
@@ -175,17 +192,116 @@ A Next.js application for sneaker enthusiasts to search, save, and organize thei
   - Enhanced query reliability
   - Better error state management
   - Added proper error boundaries
+- Enhanced vault page with improved shoe cards:
+  - Added colorway information display
+  - Improved image handling and error states
+  - Added creation date display
+  - Enhanced card layout and spacing
+  - Improved responsive design
+  - Added dark mode support
+  - Added "Add to Collection" functionality directly from cards
+  - Improved remove from vault confirmation
+  - Enhanced loading and error states
+  - Added proper image fallbacks
+- Implemented dark mode:
+  - Added theme toggle in navbar
+  - Created custom jet black dark theme
+  - Enhanced contrast and readability
+  - Persisted theme preference in localStorage
+  - Added smooth theme transitions
+  - Improved component dark mode support
+  - Enhanced accessibility with proper ARIA labels
+- Improved collection management:
+  - Added CollectionModal integration in vault
+  - Enhanced collection item display
+  - Improved collection creation workflow
+  - Added proper validation and error handling
+  - Enhanced collection navigation
+  - Added responsive design for collection views
+- Enhanced UI/UX across all pages:
+  - Improved button consistency and placement
+  - Added back navigation in shoe detail page
+  - Enhanced collections page layout and interactions
+  - Added better empty state illustrations
+  - Improved responsive design on all pages
+  - Enhanced visual hierarchy and spacing
+  - Added consistent hover states and transitions
+  - Improved accessibility with proper ARIA labels
+  - Added loading states and error handling
+  - Enhanced form interactions and validation
+  - Improved navigation between pages
+  - Added proper confirmation dialogs
+  - Enhanced visual feedback for actions
+- Improved dark mode implementation:
+  - Improved dark mode color scheme with better contrast
+  - Enhanced card backgrounds and text readability
+  - Added proper hover states for dark mode
+  - Improved button visibility in dark mode
+  - Enhanced error states and loading indicators
+  - Added consistent dark mode styling across components
+  - Improved dark mode transitions
+  - Enhanced accessibility in dark mode
+  - Added proper dark mode support for modals
+  - Improved dark mode for empty states
+  - Enhanced dark mode for error pages
+  - Added proper dark mode for form elements
+- Improved error handling and user experience:
+  - Added better error page for 404 and failed requests
+  - Enhanced error messages with clear instructions
+  - Added back navigation on error pages
+  - Improved loading states with back button
+  - Enhanced error state styling
+  - Added proper error boundaries
+  - Improved error feedback for users
+  - Enhanced navigation flow on errors
+- Enhanced UI consistency:
+  - Fixed button placement in shoe cards
+  - Improved card heights and spacing
+  - Added consistent button styles
+  - Enhanced hover states
+  - Improved icon and text alignment
+  - Added proper gaps between elements
+  - Enhanced responsive layout
+  - Improved visual hierarchy
+  - Added consistent padding and margins
+  - Enhanced component transitions
+- Enhanced user feedback system:
+  - Replaced basic alerts with DaisyUI toast notifications
+  - Added confirmation dialogs for destructive actions
+  - Improved error messages and success notifications
+  - Added loading states for all actions
+  - Enhanced visual feedback for user actions
+  - Added proper error handling for missing data
+  - Improved collection management feedback
+- Improved dark mode implementation:
+  - Enhanced color consistency across components
+  - Fixed text contrast issues
+  - Improved button visibility in dark mode
+  - Added proper dark backgrounds for modals
+  - Enhanced input field styling in dark mode
+  - Fixed dark mode colors in collection cards
+- Fixed collection management:
+  - Added proper validation for collection items
+  - Fixed null constraint violations in database
+  - Improved error handling for collection operations
+  - Added data validation before database operations
+  - Enhanced collection item creation workflow
+  - Fixed issues with adding items to collections
+- UI/UX improvements:
+  - Enhanced modal designs and interactions
+  - Improved button placement consistency
+  - Added better spacing and layout
+  - Enhanced visual hierarchy
+  - Improved loading states visibility
+  - Added proper confirmation dialogs
+  - Enhanced mobile responsiveness
 
 ## Next Steps
-1. Implement "Add to Collection" functionality in ShoeCard and detail page
-2. Add collection management modal/page
-3. Enhance vault page with:
-   - Grid/List view toggle
-   - Sorting options
-   - Filtering by brand, price range
-4. Add search filters and sorting options
-5. Implement batch operations for collections
-6. Add shoe statistics and analytics
+1. Add search filters and sorting options
+2. Implement batch operations for collections
+3. Add shoe statistics and analytics
+4. Enhance user profile and settings
+5. Add social sharing features
 
 ## Issues and Notes
 - Monitor database performance and optimize queries if needed
@@ -217,3 +333,46 @@ A Next.js application for sneaker enthusiasts to search, save, and organize thei
 - Improved Supabase query reliability
 - Enhanced error state management
 - Added proper error boundaries for failed operations
+- Added collection management features
+- Enhanced collection UI and interactions
+- Improved collection workflow
+- Added proper validation for collections
+- Enhanced collection error handling
+- Enhanced collection management UI/UX
+- Added collection editing capabilities
+- Improved collection item handling
+- Enhanced collection navigation
+- Added proper collection validation
+- Added dark mode support across all components
+- Enhanced component reusability with theme support
+- Improved visual consistency in dark mode
+- Added proper theme persistence
+- Enhanced accessibility in dark mode
+- Improved button consistency across pages
+- Enhanced dark mode support for all components
+- Added proper back navigation
+- Improved collections page UI/UX
+- Enhanced empty state handling
+- Added better visual feedback
+- Improved responsive design
+- Enhanced accessibility
+- Added proper loading states
+- Improved error handling
+- Enhanced component transitions
+- Added proper dark mode contrast
+- Improved form interactions
+- Enhanced navigation experience
+- Improved dark mode color scheme
+- Enhanced error handling and navigation
+- Fixed button consistency
+- Improved card layouts
+- Enhanced user experience
+- Added better error pages
+- Improved navigation flow
+- Enhanced visual consistency
+- Improved toast notification system using DaisyUI
+- Enhanced dark mode color scheme
+- Fixed collection item validation
+- Added proper error handling for database operations
+- Improved user feedback mechanisms
+- Enhanced modal interactions and confirmations
