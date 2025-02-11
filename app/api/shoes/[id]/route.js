@@ -1,6 +1,9 @@
 const SneaksAPI = require('sneaks-api');
 const sneaks = new SneaksAPI();
 
+// Cache shoe details for 24 hours
+export const revalidate = 86400;
+
 export async function GET(request, { params }) {
   try {
     // Ensure params is properly resolved
@@ -39,10 +42,16 @@ export async function GET(request, { params }) {
           }
         };
 
-        resolve(new Response(JSON.stringify(shoeData), {
+        // Create response with cache headers
+        const response = new Response(JSON.stringify(shoeData), {
           status: 200,
-          headers: { 'Content-Type': 'application/json' },
-        }));
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'public, s-maxage=86400'
+          },
+        });
+
+        resolve(response);
       });
     });
   } catch (error) {

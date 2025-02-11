@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Trash, FolderClosed } from 'lucide-react';
 import CollectionModal from '../components/CollectionModal';
 
@@ -109,12 +108,11 @@ export default function VaultPage() {
           >
             <figure className="relative px-4 pt-4">
               <div className="relative w-full h-56">
-                <Image
+                <img
                   src={sneaker.thumbnail}
                   alt={sneaker.name}
-                  width={400}
-                  height={400}
                   className="rounded-xl object-contain bg-gray-50 dark:bg-gray-800 w-full h-full"
+                  loading="lazy"
                   onError={(e) => {
                     console.error('Image load error:', e);
                     e.target.style.display = 'none';

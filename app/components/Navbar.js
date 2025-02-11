@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useEffect, useState } from 'react';
@@ -135,12 +134,11 @@ const Navbar = () => {
                 >
                   {user.user_metadata?.avatar_url ? (
                     <div className="relative w-8 h-8">
-                      <Image
+                      <img
                         src={user.user_metadata.avatar_url}
                         alt="Profile"
-                        fill
-                        sizes="(max-width: 768px) 32px"
-                        className="rounded-full"
+                        className="rounded-full w-full h-full"
+                        loading="lazy"
                       />
                     </div>
                   ) : (

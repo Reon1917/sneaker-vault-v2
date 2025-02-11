@@ -1,9 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import ShoeCard from '../components/ShoeCard'
+import { getCachedData, setCachedData } from '../utils/cache'
+import { debounce } from '../utils/debounce'
 
 // Dynamically import icons with fallback
 const Search = dynamic(() => import('lucide-react').then(mod => mod.Search), {
@@ -16,32 +18,82 @@ const Loader2 = dynamic(() => import('lucide-react').then(mod => mod.Loader2), {
   loading: () => <span className="w-5 h-5" />
 })
 
+const MIN_QUERY_LENGTH = 2;
+const DEBOUNCE_DELAY = 500;
+
 export default function SearchPage() {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState([])
   const [loading, setLoading] = useState(false)
+  const abortControllerRef = useRef(null);
 
-  const handleSearch = async (e) => {
-    e.preventDefault()
-    if (!query.trim()) return
+  const performSearch = useCallback(async (searchQuery) => {
+    if (searchQuery.length < MIN_QUERY_LENGTH) {
+      setResults([]);
+      return;
+    }
 
-    setLoading(true)
+    setLoading(true);
+    
     try {
-      const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`)
+      // Cancel previous request if it exists
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+
+      // Check cache first
+      const cacheKey = `search_${searchQuery.toLowerCase()}`
+      const cachedResults = getCachedData(cacheKey)
+      
+      if (cachedResults) {
+        setResults(cachedResults)
+        setLoading(false)
+        return
+      }
+
+      // Create new AbortController for this request
+      abortControllerRef.current = new AbortController();
+
+      const response = await fetch(
+        `/api/search?q=${encodeURIComponent(searchQuery)}`,
+        { signal: abortControllerRef.current.signal }
+      );
+
+      if (!response.ok) throw new Error('Search failed');
+
       const data = await response.json()
+      
+      // Cache the results
+      setCachedData(cacheKey, data)
       setResults(data)
     } catch (error) {
+      if (error.name === 'AbortError') {
+        // Request was aborted, do nothing
+        return;
+      }
       console.error('Search error:', error)
+      setResults([]);
     } finally {
       setLoading(false)
     }
-  }
+  }, []);
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      handleSearch(e)
-    }
-  }
+  // Create debounced search function
+  const debouncedSearch = useCallback(
+    debounce((value) => performSearch(value), DEBOUNCE_DELAY),
+    [performSearch]
+  );
+
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setQuery(value);
+    debouncedSearch(value);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    performSearch(query);
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -54,16 +106,16 @@ export default function SearchPage() {
         </p>
       </div>
 
-      <form onSubmit={handleSearch} className="max-w-2xl mx-auto mb-12">
+      <form onSubmit={handleSubmit} className="max-w-2xl mx-auto mb-12">
         <div className="relative flex items-center">
           <input
             type="text"
             placeholder="Search for sneakers..."
             className="input input-bordered w-full pl-12 h-14 text-lg focus:ring-2 focus:ring-primary"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={handleKeyDown}
+            onChange={handleInputChange}
             aria-label="Search sneakers"
+            minLength={MIN_QUERY_LENGTH}
           />
           <div className="absolute left-4">
             <Search className="h-5 w-5 text-gray-400" aria-hidden="true" />
@@ -71,7 +123,7 @@ export default function SearchPage() {
           <button
             type="submit"
             className="btn btn-primary ml-2 h-14 px-8"
-            disabled={loading}
+            disabled={loading || query.length < MIN_QUERY_LENGTH}
             aria-label={loading ? 'Searching...' : 'Search'}
           >
             {loading ? (
@@ -95,7 +147,7 @@ export default function SearchPage() {
         </div>
       )}
 
-      {results.length === 0 && !loading && query && (
+      {results.length === 0 && !loading && query.length >= MIN_QUERY_LENGTH && (
         <div className="text-center py-12">
           <p className="text-gray-500 dark:text-gray-400">No sneakers found. Try a different search term.</p>
         </div>

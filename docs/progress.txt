@@ -5,6 +5,40 @@ A Next.js application for sneaker enthusiasts to search, save, and organize thei
 
 ## Recent Updates (Latest First)
 
+### Performance Optimizations
+- Further reduced Vercel computing quota usage:
+  - Implemented request debouncing for search (500ms delay)
+  - Added request cancellation for concurrent API calls
+  - Implemented vault status caching (5-minute duration)
+  - Added minimum query length requirement (2 chars)
+  - Enhanced client-side caching strategies
+  - Optimized API request patterns
+  - Reduced unnecessary API calls
+  - Added cleanup for aborted requests
+  - Improved error handling and recovery
+
+### Performance Optimizations
+- Reduced Vercel computing quota usage:
+  - Implemented server-side caching for API routes (24-hour cache)
+  - Added client-side caching for search and shoe details
+  - Disabled Vercel's image optimization
+  - Implemented native lazy loading for images
+  - Kept eager loading for primary product images
+  - Added proper cache headers for API responses
+  - Reduced edge function calls with caching
+  - Improved overall performance and reduced costs
+  - Enhanced client-side data persistence
+  - Optimized API response caching
+
+### Performance Optimizations
+- Optimized image loading and reduced Vercel usage:
+  - Disabled Vercel's image optimization
+  - Implemented native lazy loading for images
+  - Kept eager loading for primary product images
+  - Reduced edge function usage
+  - Improved overall performance
+  - Reduced Vercel's compute units consumption
+
 ### Build and Configuration Improvements
 - Fixed image loading issues:
   - Added proper remote patterns for external image domains

@@ -1,10 +1,12 @@
 'use client'
 
-import { useState, useEffect, use, useCallback } from 'react'
-import Image from 'next/image'
+import { useState, useEffect, use, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '../../../supabase/client'
 import { ArrowLeft } from 'lucide-react'
+import { getCachedData, setCachedData } from '../../utils/cache'
+
+const VAULT_STATUS_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 export default function ShoeDetailPage({ params }) {
   const router = useRouter()
@@ -15,20 +17,53 @@ export default function ShoeDetailPage({ params }) {
   const [saving, setSaving] = useState(false)
   const [isInVault, setIsInVault] = useState(false)
   const [selectedImage, setSelectedImage] = useState(null)
+  const abortControllerRef = useRef(null);
+  const lastVaultCheckRef = useRef(0);
 
   const fetchShoeDetails = useCallback(async () => {
     try {
-      const response = await fetch(`/api/shoes/${resolvedParams.id}`)
+      // Check cache first
+      const cacheKey = `shoe_${resolvedParams.id}`
+      const cachedData = getCachedData(cacheKey)
+      
+      if (cachedData) {
+        setShoe(cachedData)
+        setSelectedImage(cachedData.thumbnail)
+        setLoading(false)
+        return
+      }
+
+      // Cancel previous request if it exists
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+
+      // Create new AbortController for this request
+      abortControllerRef.current = new AbortController();
+
+      const response = await fetch(
+        `/api/shoes/${resolvedParams.id}`,
+        { signal: abortControllerRef.current.signal }
+      );
+
       if (!response.ok) {
         if (response.status === 404) {
           throw new Error('Shoe not found')
         }
         throw new Error('Failed to fetch shoe details')
       }
+
       const data = await response.json()
+      
+      // Cache the results
+      setCachedData(cacheKey, data)
       setShoe(data)
       setSelectedImage(data.thumbnail)
     } catch (error) {
+      if (error.name === 'AbortError') {
+        // Request was aborted, do nothing
+        return;
+      }
       console.error('Error fetching shoe details:', error)
       setError(error.message)
     } finally {
@@ -37,8 +72,22 @@ export default function ShoeDetailPage({ params }) {
   }, [resolvedParams.id])
 
   const checkVaultStatus = useCallback(async () => {
+    const now = Date.now();
+    // Only check vault status every 5 minutes unless forced
+    if (now - lastVaultCheckRef.current < VAULT_STATUS_CACHE_DURATION) {
+      return;
+    }
+
     const { data: { session } } = await supabase.auth.getSession()
     if (session) {
+      const cacheKey = `vault_status_${session.user.id}_${resolvedParams.id}`;
+      const cachedStatus = getCachedData(cacheKey);
+
+      if (cachedStatus !== null) {
+        setIsInVault(cachedStatus);
+        return;
+      }
+
       const { data, error } = await supabase
         .from('vault')
         .select('*')
@@ -46,13 +95,23 @@ export default function ShoeDetailPage({ params }) {
         .eq('style_id', resolvedParams.id)
         .single()
       
-      setIsInVault(!!data)
+      const status = !!data;
+      setIsInVault(status);
+      setCachedData(cacheKey, status);
+      lastVaultCheckRef.current = now;
     }
   }, [resolvedParams.id])
 
   useEffect(() => {
     fetchShoeDetails()
     checkVaultStatus()
+
+    return () => {
+      // Cleanup: abort any ongoing requests when component unmounts
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
   }, [fetchShoeDetails, checkVaultStatus])
 
   const handleAddToVault = async () => {
@@ -154,35 +213,35 @@ export default function ShoeDetailPage({ params }) {
         {/* Image Section */}
         <div className="space-y-6">
           <div className="aspect-square rounded-xl overflow-hidden shadow-lg relative">
-            <Image 
+            <img 
               src={selectedImage} 
               alt={shoe?.name || ''}
-              fill
-              className="object-contain bg-gray-50 dark:bg-gray-800"
+              className="object-contain bg-gray-50 dark:bg-gray-800 w-full h-full"
+              loading="eager"
             />
           </div>
           <div className="grid grid-cols-4 gap-4">
             <div className="relative aspect-square">
-              <Image 
+              <img 
                 src={shoe?.thumbnail} 
                 alt={shoe?.name || ''}
-                fill
                 onClick={() => setSelectedImage(shoe.thumbnail)}
-                className={`rounded-lg cursor-pointer object-contain bg-gray-50 dark:bg-gray-800 border-2 ${
+                className={`rounded-lg cursor-pointer object-contain bg-gray-50 dark:bg-gray-800 border-2 w-full h-full ${
                   selectedImage === shoe?.thumbnail ? 'border-primary' : 'border-transparent'
                 }`}
+                loading="lazy"
               />
             </div>
             {shoe?.imageLinks?.slice(0, 3).map((img, index) => (
               <div key={index} className="relative aspect-square">
-                <Image 
+                <img 
                   src={img} 
                   alt={`${shoe.name} view ${index + 1}`}
-                  fill
                   onClick={() => setSelectedImage(img)}
-                  className={`rounded-lg cursor-pointer object-contain bg-gray-50 dark:bg-gray-800 border-2 ${
+                  className={`rounded-lg cursor-pointer object-contain bg-gray-50 dark:bg-gray-800 border-2 w-full h-full ${
                     selectedImage === img ? 'border-primary' : 'border-transparent'
                   }`}
+                  loading="lazy"
                 />
               </div>
             ))}

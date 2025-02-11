@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Plus, Check, Trash, FolderClosed } from 'lucide-react'
 import CollectionModal from './CollectionModal'
@@ -144,13 +143,11 @@ export default function ShoeCard({ shoe, showVaultControls = true }) {
         <figure className="relative px-4 pt-4">
           <Link href={`/shoe/${shoe.styleID}`} className="w-full">
             <div className="relative w-full h-56">
-              <Image
+              <img
                 src={shoe.thumbnail}
                 alt={shoe.shoeName || shoe.name}
-                width={400}
-                height={400}
                 className="rounded-xl object-contain bg-gray-50 dark:bg-gray-900 w-full h-full"
-                priority={true}
+                loading="lazy"
                 onError={(e) => {
                   console.error('Image load error:', e)
                   e.target.style.display = 'none'
